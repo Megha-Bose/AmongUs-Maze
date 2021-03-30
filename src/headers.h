@@ -117,6 +117,7 @@ static Cell *cell;
 static int screen_width, screen_height;			// the size of maze
 static int st_x, st_y;							// start
 static int exit_x, exit_y;						// exit
+static int imposter_x, imposter_y;						// position of imposter
 static int *chosen;								// the pointer of array of connected cells
 
 static int state = 0;							// current state (making maze, playing game or end)

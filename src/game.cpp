@@ -171,7 +171,6 @@ void draw_maze()
 			glEnd();
 		}
 	}
-
 }
 
 void initalise_buttons_rewards_obs()
@@ -207,7 +206,7 @@ void gen_maze()
 	if( length == screen_width * screen_height) 
 	{
 		state = 1;
-		for(int i = 0; i < screen_width*screen_height; i++)
+		for(int i = 0; i < screen_width * screen_height; i++)
 			cell[i].is_open = false;
 		return;
 	}
@@ -256,6 +255,8 @@ void gen_maze()
 		length = 1;
 
 		initalise_buttons_rewards_obs();
+		imposter_x = rand() % (screen_width - 1) + 1;
+		imposter_y = rand() % (screen_height - 1) + 1;
 	}
 
 	bool chk_open = false;
@@ -377,7 +378,8 @@ void display_time()
 	string = " | Tasks Left: " + to_string(tasks_left) + " " + string; 
 	string = "Health: " + to_string(health) + " " + string;
 	int lenn = string.length();
-	for (int i = 0; i < lenn - rem; i++) {
+	for (int i = 0; i < lenn - rem; i++) 
+	{
 		glutBitmapCharacter(GLUT_BITMAP_8_BY_13, string[i]);
 	}
 	glutBitmapCharacter(GLUT_BITMAP_8_BY_13, ' ');
@@ -477,19 +479,12 @@ void check_obstacle_collision(int x, int y)
 
 void game_play()
 {
-	static int oldTime;
-	int currTime = get_time();
 	static Astro finder1(st_x, st_y, 0);
-	static Astro finder2(exit_x + 1, exit_y + 1, 1);
+	static Astro finder2(imposter_x, imposter_y, 1);
 	static int x1 = st_x;
 	static int y1 = st_y;
-	static int x2 = st_x;
-	static int y2 = st_y;
-	
-
-	if(currTime - oldTime > timefactor)
-		oldTime = currTime;
-	else return;
+	static int x2 = imposter_x;
+	static int y2 = imposter_y;
 
 	if (player == NULL) 
 	{
@@ -497,7 +492,8 @@ void game_play()
 		finder1.set_color(1.0-bg_red, 1.0-bg_green, 1.0-bg_blue);
 	}
 
-	if (imposter == NULL) {
+	if (imposter == NULL) 
+	{
 		imposter = &finder2;
 		finder2.set_color(1.0-bg_red, 1.0-bg_green, 1.0-bg_blue);
 	}
@@ -506,15 +502,10 @@ void game_play()
 	if(finder1.isMoving())
 		return;
 
-	if(x1 == exit_x && y1 == exit_y) 
-	{	// if exit
-		if(tasks_left <= 0)
-		{
-			state++;
-			player->set_exit_status();
-			return;
-		}
-	}
+	// moving the imposter
+	finder2.updateStatus();
+
+	grid(x2, y2).is_open = true;
 
 	// moving the player
 	if (userInputDir > -1) 
@@ -551,6 +542,38 @@ void game_play()
 				x1--;
 			}
 		}
+		if(y1 > y2) 
+		{
+			if(grid(x2, y2).path[up] == true && y2 < ::screen_height-1) 
+			{
+				finder2.set_dir(Astro::UP);
+				y2++;
+			}
+		}
+		else if(y1 < y2)
+		{
+			if(grid(x2, y2).path[down] == true && y2 > 0) 
+			{
+				finder2.set_dir(Astro::DOWN);
+				y2--;
+			}
+		}
+		else if(x1 > x2)
+		{
+			if(grid(x2, y2).path[right] == true && x2 < ::screen_width-1) 
+			{
+				finder2.set_dir(Astro::RIGHT);
+				x2++;
+			}
+		}
+		else if(x1 < x2)
+		{
+			if(grid(x2, y2).path[left] == true && x2 > 0) 
+			{
+				finder2.set_dir(Astro::LEFT);
+				x2--;
+			}
+		}
 		userInputDir = -1;
 	}
 
@@ -571,6 +594,7 @@ void game_play()
 			}
 		}
 	}
+
 	if(rew_obs_released_flag == true)
 	{
 		check_reward_collision(x1, y1);
@@ -578,80 +602,14 @@ void game_play()
 	}
 
 	if(tasks_left <= 0 && player != NULL && x1 == exit_x && y1 == exit_y)
-	{
 		state = 2;
-	}
 	
-	// if(imposter_killed_flag == false)
-	// {
-	// 	if(x1 == x2 && y1 == y2)
-	// 	{
-	// 		win = 0;
-	// 		display_end_screen();
-	// 	}
-	// }
-
-	// finder2.updateStatus();
-	// if(finder2.isMoving())
-	// 	return;
-
-	// moving the imposter
-	// grid(x2, y2).is_open = true;
-	// if(finder2.stkIsEmpty() || finder2.stkTop() < NO_DIR) 
-	// {
-	// 	if(grid(x2,  y2).path[down] == true && y2 > 0 && grid(x2, y2-1).is_open == false) {
-	// 		finder2.set_dir(Astro::DOWN);
-	// 		y2--;
-	// 		grid(x2, y2).is_open = true;
-	// 		finder2.stkPush(down);
-	// 		return;
-	// 	}
-	// 	else finder2.stkPush(NOTDOWN);
-	// }
-	// if(finder2.stkTop() == NOTDOWN) 
-	// {
-	// 	if(grid(x2, y2).path[left] == true && x2 > 0 && grid(x2-1, y2).is_open == false) {
-	// 		finder2.set_dir(Astro::LEFT);
-	// 		x2--;
-	// 		grid(x2, y2).is_open = true;
-	// 		finder2.stkPush(left);
-	// 		return;
-	// 	}
-	// 	else finder2.stkPush(NOTLEFT);
-	// }
-	// if(finder2.stkTop() == NOTLEFT) 
-	// {
-	// 	if(grid(x2, y2).path[right] == true && x2 < ::screen_width-1 && grid(x2+1, y2).is_open == false) {
-	// 		finder2.set_dir(Astro::RIGHT);
-	// 		x2++;
-	// 		grid(x2, y2).is_open = true;
-	// 		finder2.stkPush(right);
-	// 		return;
-	// 	}
-	// 	else finder2.stkPush(NOTRIGHT);
-	// }
-	// if(finder2.stkTop() == NOTRIGHT) 
-	// {
-	// 	if(grid(x2, y2).path[up] == true && y2 < ::screen_height-1 && grid(x2, y2+1).is_open == false) {
-	// 		finder2.set_dir(Astro::UP);
-	// 		y2++;
-	// 		grid(x2, y2).is_open = true;
-	// 		finder2.stkPush(up);
-	// 		return;
-	// 	}
-	// 	else finder2.stkPush(NOTUP);
-	// }
-
-	// int temp_dest;
-	// finder2.stkPop();
-	// finder2.stkPop();
-	// finder2.stkPop();
-	// finder2.stkPop();
-	// temp_dest = finder2.stkPop();
-	// if(temp_dest == down) y2++, finder2.set_dir(Astro::UP);
-	// else if(temp_dest == left) x2++, finder2.set_dir(Astro::RIGHT);
-	// else if(temp_dest == right) x2--, finder2.set_dir(Astro::LEFT);
-	// else if(temp_dest == up) y2--, finder2.set_dir(Astro::DOWN);
+	if(imposter_killed_flag == false && x1 == x2 && y1 == y2)
+	{
+		win = 0;
+		cout << x1 << " " << y1 << " " << x2 << " " << y2 << endl;	
+		display_end_screen();
+	}
 }
 
 // view function
