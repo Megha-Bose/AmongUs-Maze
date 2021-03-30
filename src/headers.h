@@ -33,10 +33,7 @@ public:
 	// constructor
 	Astro(int x_position, int y_position , int imposter_chk);
 	// destructor
-	~Astro() 
-	{ 
-		delete recur_stk; 
-	}
+	~Astro() {}
 
 	// check if moving
 	bool isMoving() 
@@ -75,23 +72,6 @@ public:
 
 	void set_exit_status() { this->get_exit = true; }
 
-	// stack function for imposter path finding
-	bool stkIsEmpty() 
-	{ 
-		return stk_top == -1; 
-	}
-	void stkPush(int look_dir) 
-	{ 
-		recur_stk[++stk_top] = look_dir; 
-	}
-	int stkPop() 
-	{ 
-		return (stk_top == -1)? recur_stk[stk_top+1]: recur_stk[stk_top--]; 
-	}
-	int stkTop() 
-	{
-		 return recur_stk[stk_top]; 
-	}
 private:
 	// path finding
 	double curr_x;
@@ -112,14 +92,10 @@ private:
 	double body_green;
 	double body_blue;
 	void create_body();	// body components in call list of the character
-
-	// stack for path finding
-	int* recur_stk;
-	int stk_top;
 };
 
 static double bg_red, bg_green, bg_blue;		// background color
-static double TOTAL_GAME_TIME = 200.0;
+static double TOTAL_GAME_TIME = 60.0;
 
 static Cell *cell;
 static int screen_width, screen_height;			// the size of maze
@@ -140,7 +116,7 @@ static int camera_bottom, camera_top;	        // view points
 static int camera_zoom;
 static int timefactor;							// duration
 static int tasks_left = 2;						// number of tasks left
-static int health = 10;							// health of player
+static int health = 3;							// health of player
 static int danger = 0;							// for decreasing health
 static int gift = 0;							// for increasing health
 const int num_buttons = 2;

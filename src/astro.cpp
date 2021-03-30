@@ -84,10 +84,6 @@ Astro::Astro(int start_x, int start_y, int imposter_chk)
 	this->prev_y = this->curr_y = 20.0 + 10.0 * start_y;
 
 	create_body();
-
-	// path finding for imposter
-	this->recur_stk = new int[screen_width * screen_height * 4];
-	this->stk_top = -1;
 }
 
 // draw body

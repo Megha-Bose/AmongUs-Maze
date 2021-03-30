@@ -12,7 +12,7 @@
 
 using namespace std;
 
-static int get_time() 
+static int get_time()
 {
 	static time_t init_sec = 0;
 	timeval tv;
@@ -24,16 +24,16 @@ static int get_time()
 
 void display_end_message()
 {
-	string string1 = "Game Over.";
+	string string1 = "";
 	if(win)
 	{
-		glRasterPos2f(15, 35);
-		string1 = string1 + " You won !!!" + " Score: " + to_string(health);
+		glRasterPos2f(25, 35);
+		string1 = string1 + " Your score: " + to_string(health);
 	}
 	else
 	{
 		glRasterPos2f(25, 35);
-		string1 = string1 + " You lost.";
+		string1 = string1 + "Game Over. You lost.";
 	}
 	int leng = string1.length();
 	for (int i = 0; i < leng; i++) 
@@ -377,7 +377,7 @@ void display_time()
 	auto string = to_string(val);
 	
 	string = " | Time left: " + string; 
-	string = " | Tasks Left: " + to_string(tasks_left) + " " + string; 
+	string = " | Tasks: " + to_string(2 - tasks_left) + " / 2 " + string; 
 	string = "Health: " + to_string(health) + " " + string;
 	int lenn = string.length();
 	for (int i = 0; i < lenn - rem; i++) 
@@ -608,7 +608,7 @@ void game_play()
 	
 	if(imposter_killed_flag == false && x1 == x2 && y1 == y2)
 	{
-		health = health - 3;
+		health = health - 2;
 		imposter_killed_flag = true;
 		finder2.set_clear(1);
 		tasks_left = max(0, tasks_left - 1);
