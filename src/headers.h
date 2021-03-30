@@ -56,6 +56,13 @@ public:
 		body_red = r; body_green = g, body_blue = b; 
 	}
 
+	void set_clear(int chk)
+	{
+		clear_check = chk;
+	}
+
+	int get_clear() { return this->clear_check; }
+
 	// draw character
 	void draw();
 
@@ -95,6 +102,7 @@ private:
 	int init_look_dir;
 	bool get_exit;
 	int imposter_check;
+	int clear_check;
 	// animation
 	bool ismoving;
 	int walking;		// Walking check

@@ -203,6 +203,7 @@ void gen_maze()
 	int currTime, tmp;
 	static int oldTime = 0;
 
+	// when all cells visited
 	if( length == screen_width * screen_height) 
 	{
 		state = 1;
@@ -217,7 +218,7 @@ void gen_maze()
 		oldTime = currTime;
 	else return;
 
-
+	// start
 	if( length == 0 )
 	{
 		// start point and exit
@@ -251,7 +252,7 @@ void gen_maze()
 		x = rand() % screen_width;
 		y = rand() % screen_height;
 		grid(x, y).is_open = true;
-		chosen[0] = screen_width * y + x;	// store the first visited cell
+		chosen[0] = screen_width * y + x;	// storing the first visited cell
 		length = 1;
 
 		initalise_buttons_rewards_obs();
@@ -267,64 +268,65 @@ void gen_maze()
 		y = tmp / screen_width;
 
 		dest = rand() % 4;	
-		
-		switch( dest )
+
+		if(dest == up)
 		{
-			case up:
-				if( y == screen_height-1 || grid(x, y + 1).is_open == true)
+			// don't traverse if at border or already visited 
+			if( y == screen_height-1 || grid(x, y + 1).is_open == true)
+				continue;
+
+			// marking visited
+			grid(x, y + 1).is_open = true;
+
+			// creating link between two cells
+			grid(x, y).path[ up ] = true;
+			grid(x, y + 1).path[ down ] = true;
+
+			chosen[length] = x + screen_width * ( y + 1 );
+			length++;
+			chk_open = true;
+		}
+		else if(dest == down)
+		{
+			if( y == 0 || grid(x, y - 1).is_open == true )
 					continue;
 
-				grid(x, y + 1).is_open = true;
+			grid(x, y - 1).is_open = true;
 
-				grid(x, y + 1).path[ down ] = true;
-				grid(x, y).path[ up ] = true;
+			grid(x, y).path[ down ] = true;
+			grid(x, y - 1).path[ up ] = true;
 
-				chosen[length] = screen_width*( y + 1 ) + x;
-				length++;
-				chk_open = true;
-				break;
+			chosen[length] = x + screen_width * (y - 1);
+			length++;
+			chk_open = true;
+		}
+		else if(dest == left)
+		{
+			if( x == 0 || grid(x - 1,  y).is_open == true )
+				continue;
 
-			case down:
-				if( y == 0 || grid(x, y - 1).is_open == true )
-					continue;
+			grid(x - 1,  y).is_open = true;
 
-				grid(x, y - 1).is_open = true;
+			grid(x,  y).path[ left ] = true;
+			grid(x - 1,  y).path[ right ] = true;
 
-				grid(x, y - 1).path[ up ] = true;
-				grid(x, y).path[ down ] = true;
+			chosen[length] = screen_width * y + x - 1;
+			length++;
+			chk_open = true;
+		}
+		else if(dest == right)
+		{
+			if( x == screen_width-1 || grid(x + 1, y).is_open == true )
+				continue;
 
-				chosen[length] = screen_width*(y - 1) + x;
-				length++;
-				chk_open = true;
-				break;
+			grid(x + 1,  y).is_open = true;
 
-			case left:
-				if( x == 0 || grid(x - 1,  y).is_open == true )
-					continue;
+			grid(x,  y).path[ right ] = true;
+			grid(x + 1,  y).path[ left ] = true;
 
-				grid(x - 1,  y).is_open = true;
-
-				grid(x - 1,  y).path[ right ] = true;
-				grid(x,  y).path[ left ] = true;
-
-				chosen[length] = screen_width * y + x - 1;
-				length++;
-				chk_open = true;
-				break;
-			
-			case right:
-				if( x == screen_width-1 || grid(x + 1, y).is_open == true )
-					continue;
-
-				grid(x + 1,  y).is_open = true;
-
-				grid(x + 1,  y).path[ left ] = true;
-				grid(x,  y).path[ right ] = true;
-
-				chosen[length] = screen_width * y + x + 1;
-				length++;
-				chk_open = true;
-				break;
+			chosen[length] = screen_width * y + x + 1;
+			length++;
+			chk_open = true;
 		}
 	}
 }
@@ -512,7 +514,7 @@ void game_play()
 	{
 		if(userInputDir == up) 
 		{
-			if(grid(x1, y1).path[up] == true && y1 < ::screen_height-1 && grid(x1, y1+1).is_open == false) 
+			if(grid(x1, y1).path[up] == true && y1 < ::screen_height-1) 
 			{
 				finder1.set_dir(Astro::UP);
 				y1++;
@@ -520,7 +522,7 @@ void game_play()
 		}
 		else if(userInputDir == down)
 		{
-			if(grid(x1, y1).path[down] == true && y1 > 0 && grid(x1, y1-1).is_open == false) 
+			if(grid(x1, y1).path[down] == true && y1 > 0) 
 			{
 				finder1.set_dir(Astro::DOWN);
 				y1--;
@@ -528,7 +530,7 @@ void game_play()
 		}
 		else if(userInputDir == right)
 		{
-			if(grid(x1, y1).path[right] == true && x1 < ::screen_width-1 && grid(x1+1, y1).is_open == false) 
+			if(grid(x1, y1).path[right] == true && x1 < ::screen_width-1) 
 			{
 				finder1.set_dir(Astro::RIGHT);
 				x1++;
@@ -536,13 +538,13 @@ void game_play()
 		}
 		else if(userInputDir == left)
 		{
-			if(grid(x1, y1).path[left] == true && x1 > 0 && grid(x1-1, y1).is_open == false) 
+			if(grid(x1, y1).path[left] == true && x1 > 0) 
 			{
 				finder1.set_dir(Astro::LEFT);
 				x1--;
 			}
 		}
-		if(y1 > y2) 
+		if(y1 > y2  && finder2.get_clear() == 0) 
 		{
 			if(grid(x2, y2).path[up] == true && y2 < ::screen_height-1) 
 			{
@@ -550,7 +552,7 @@ void game_play()
 				y2++;
 			}
 		}
-		else if(y1 < y2)
+		else if(y1 < y2  && finder2.get_clear() == 0)
 		{
 			if(grid(x2, y2).path[down] == true && y2 > 0) 
 			{
@@ -558,7 +560,7 @@ void game_play()
 				y2--;
 			}
 		}
-		else if(x1 > x2)
+		else if(x1 > x2  && finder2.get_clear() == 0)
 		{
 			if(grid(x2, y2).path[right] == true && x2 < ::screen_width-1) 
 			{
@@ -566,7 +568,7 @@ void game_play()
 				x2++;
 			}
 		}
-		else if(x1 < x2)
+		else if(x1 < x2  && finder2.get_clear() == 0)
 		{
 			if(grid(x2, y2).path[left] == true && x2 > 0) 
 			{
@@ -588,7 +590,7 @@ void game_play()
 			}
 			else if(i == 1 && imposter_killed_flag == false)
 			{
-				// kill_imposter();
+				finder2.set_clear(1);
 				imposter_killed_flag = true;   
 				tasks_left = max(0, tasks_left - 1);
 			}
@@ -606,9 +608,10 @@ void game_play()
 	
 	if(imposter_killed_flag == false && x1 == x2 && y1 == y2)
 	{
-		win = 0;
-		cout << x1 << " " << y1 << " " << x2 << " " << y2 << endl;	
-		display_end_screen();
+		health = health - 3;
+		imposter_killed_flag = true;
+		finder2.set_clear(1);
+		tasks_left = max(0, tasks_left - 1);
 	}
 }
 

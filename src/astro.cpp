@@ -74,6 +74,7 @@ Astro::Astro(int start_x, int start_y, int imposter_chk)
 	this->ismoving = false;
 	this->maze_exited = 0;
 	this->imposter_check = imposter_chk;
+	this->clear_check = 0;
 
 	this->walking = 0;
 	this->turning = 0;
@@ -92,100 +93,103 @@ Astro::Astro(int start_x, int start_y, int imposter_chk)
 // draw body
 void Astro::draw()
 {
-	glTranslatef( 30, 50, 0 );
-	double rotateAngle = 0;
-	
-	if(this->init_look_dir == LEFT) 
-		rotateAngle = 180.0;
-	else if(this->init_look_dir == UP)
-		rotateAngle = 90.0;
-	else if(this->init_look_dir == DOWN)
-		rotateAngle = -90.0;
-
-	// act of turning
-	if( this->turning < turn_fract )
+	if(this->clear_check == 0)
 	{
-		double angle;
+		glTranslatef( 30, 50, 0 );
+		double rotateAngle = 0;
+		
 		if(this->init_look_dir == LEFT) 
-		{
-			if( this->look_dir == RIGHT )
-				angle = 180.0;
-			else if( this->look_dir == UP )
-				angle = -90.0;
-			else if( this->look_dir == DOWN )
-				angle = 90.0;
-		}
-		else if(this->init_look_dir == RIGHT)
-		{
-			if( this->look_dir == LEFT )
-					angle = 180.0;
-			else if( this->look_dir == UP )
-				angle = 90.0;
-			else if( this->look_dir == DOWN )
-				angle = -90.0;
-		}
+			rotateAngle = 180.0;
 		else if(this->init_look_dir == UP)
-		{
-			if( this->look_dir == DOWN )
-					angle = 180.0;
-			else if( this->look_dir == LEFT )
-				angle = 90.0;
-			else if( this->look_dir == RIGHT )
-				angle = -90.0;
-		}	
+			rotateAngle = 90.0;
 		else if(this->init_look_dir == DOWN)
+			rotateAngle = -90.0;
+
+		// act of turning
+		if( this->turning < turn_fract )
 		{
-			if( this->look_dir == LEFT )
+			double angle;
+			if(this->init_look_dir == LEFT) 
+			{
+				if( this->look_dir == RIGHT )
+					angle = 180.0;
+				else if( this->look_dir == UP )
 					angle = -90.0;
-			else if( this->look_dir == UP )
-				angle = 180.0;
-			else if( this->look_dir == RIGHT )
-				angle = 90.0;
-		}		
-		rotateAngle += angle / turn_fract * this->turning;
+				else if( this->look_dir == DOWN )
+					angle = 90.0;
+			}
+			else if(this->init_look_dir == RIGHT)
+			{
+				if( this->look_dir == LEFT )
+						angle = 180.0;
+				else if( this->look_dir == UP )
+					angle = 90.0;
+				else if( this->look_dir == DOWN )
+					angle = -90.0;
+			}
+			else if(this->init_look_dir == UP)
+			{
+				if( this->look_dir == DOWN )
+						angle = 180.0;
+				else if( this->look_dir == LEFT )
+					angle = 90.0;
+				else if( this->look_dir == RIGHT )
+					angle = -90.0;
+			}	
+			else if(this->init_look_dir == DOWN)
+			{
+				if( this->look_dir == LEFT )
+						angle = -90.0;
+				else if( this->look_dir == UP )
+					angle = 180.0;
+				else if( this->look_dir == RIGHT )
+					angle = 90.0;
+			}		
+			rotateAngle += angle / turn_fract * this->turning;
+		}
+
+		// draw character 
+		// draw spacesuit
+		if(this->imposter_check)
+			glColor3f( 0.8, 0, 0 );
+		else
+			glColor3f( 0, 0, 0.8 );
+		glTranslatef(20, 15, 0);
+		glRotatef(rotateAngle, 0, 0, 1);
+		glTranslatef(-20, -15, 0);
+		if(this->imposter_check)
+			glColor3f( 0.8, 0, 0 );
+		else
+			glColor3f( 0, 0, 0.8 );
+		glCallList( Suit );
+
+		// draw bag
+		glPopMatrix();
+		glPushMatrix();
+		glTranslatef( 5, 20, 0 );
+		glRotatef( 180, 0 , 1, 0 );
+		glCallList( Bag );
+
+		// draw legs
+		glPopMatrix();
+		glPushMatrix();
+		glTranslatef( 8, 0, 0 );
+		glRotatef( 180, 0, 1, 0 );
+		glCallList( Leg );
+
+		glPopMatrix();
+		glPushMatrix();
+		glTranslatef( 32, 0, 0 );
+		glRotatef( 180, 0, 1, 0 );
+		glCallList( Leg );
+
+		// draw glass
+		glPopMatrix();
+		glPushMatrix();
+		glTranslatef( 23, 30, 0 );
+		glCallList( Glass );
+		glPopMatrix();
 	}
-
-	// draw character 
-	// draw spacesuit
-	if(this->imposter_check)
-		glColor3f( 0.8, 0, 0 );
-	else
-		glColor3f( 0, 0, 0.8 );
-	glTranslatef(20, 15, 0);
-	glRotatef(rotateAngle, 0, 0, 1);
-	glTranslatef(-20, -15, 0);
-	if(this->imposter_check)
-		glColor3f( 0.8, 0, 0 );
-	else
-		glColor3f( 0, 0, 0.8 );
-	glCallList( Suit );
-
-	// draw bag
-	glPopMatrix();
-	glPushMatrix();
-	glTranslatef( 5, 20, 0 );
-	glRotatef( 180, 0 , 1, 0 );
-	glCallList( Bag );
-
-	// draw legs
-	glPopMatrix();
-	glPushMatrix();
-	glTranslatef( 8, 0, 0 );
-	glRotatef( 180, 0, 1, 0 );
-	glCallList( Leg );
-
-	glPopMatrix();
-	glPushMatrix();
-	glTranslatef( 32, 0, 0 );
-	glRotatef( 180, 0, 1, 0 );
-	glCallList( Leg );
-
-	// draw glass
-	glPopMatrix();
-	glPushMatrix();
-	glTranslatef( 23, 30, 0 );
-	glCallList( Glass );
-	glPopMatrix();
 }
 
 
