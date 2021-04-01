@@ -98,7 +98,7 @@ static double bg_red, bg_green, bg_blue;		// background color
 static double TOTAL_GAME_TIME = 60.0;
 
 static Cell *cell;
-static int screen_width, screen_height;			// the size of maze
+static int screen_width = 6, screen_height = 6;			// the size of maze
 static int st_x, st_y;							// start
 static int exit_x, exit_y;						// exit
 static int imposter_x, imposter_y;						// position of imposter

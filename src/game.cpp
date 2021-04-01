@@ -2,6 +2,8 @@
 #include <GL/glut.h>
 
 #include <iostream>
+#include <algorithm>
+#include <cstdlib>
 #include <ctime>
 #include <sys/time.h>
 #include <cstring>
@@ -155,6 +157,7 @@ void draw_maze()
 		glColor3f( 1.0, 1.0, 0.0 );
 		for(int i=0; i < num_rewards; i++)
 		{
+			// cout << rewards[i][0] << " " << rewards[i][1] << endl;
 			glBegin( GL_POLYGON );
 				// coins
 				for(int j = 0; j <= num_triangles; j++)
@@ -164,6 +167,7 @@ void draw_maze()
 		glColor3f( 1.0, 0.0, 0.0 );
 		for( int i=0; i < num_obstacles; i++)
 		{
+			// cout << obstacles[i][0] << " " << obstacles[i][1] << endl;
 			glBegin( GL_POLYGON );
 				// bombs
 				for(int j = 0; j <= num_triangles; j++)
@@ -175,22 +179,41 @@ void draw_maze()
 
 void initalise_buttons_rewards_obs()
 {
+	int num = (screen_width - 2) * (screen_height - 2);
+	int arr[num][num];
+	int ind[num];
+	for(int i=0; i<screen_width-2; i++)
+	{
+		for(int j=0;j<screen_height-2;j++)
+		{
+			ind[i * (screen_width - 2) + j] = i * (screen_width - 2) + j;
+			arr[i * (screen_width - 2) + j][0] = i + 1;
+			arr[i * (screen_width - 2) + j][1] = j + 1;
+		}
+	}
+
+	std::srand(unsigned(std::time(0)));
+    std::random_shuffle(ind, ind + num);
+
+	int ii = 0;
+
 	for(int i = 0; i < num_buttons; i++)
 	{
-		buttons[i][0] = (rand() % (screen_width - 2)) + 1;
-		buttons[i][1] = (rand() % (screen_height - 2)) + 1;
+		buttons[i][0] = arr[ind[ii]][0];
+		buttons[i][1] = arr[ind[ii]][1];
+		ii++;
 	}
-
 	for(int i = 0; i < num_rewards; i++)
 	{
-		rewards[i][0] = rand() % (screen_width - 2) + 1;
-		rewards[i][1] = rand() % (screen_height - 2) + 1;
+		rewards[i][0] = arr[ind[ii]][0];
+		rewards[i][1] = arr[ind[ii]][1];
+		ii++;
 	}
-
 	for(int i = 0; i < num_obstacles; i++)
 	{
-		obstacles[i][0] = rand() % (screen_width - 2) + 1;
-		obstacles[i][1] = rand() % (screen_height - 2) + 1;
+		obstacles[i][0] = arr[ind[ii]][0];
+		obstacles[i][1] = arr[ind[ii]][1];
+		ii++;
 	}
 }
 
@@ -211,12 +234,6 @@ void gen_maze()
 			cell[i].is_open = false;
 		return;
 	}
-
-	// time
-	currTime = get_time();
-	if(currTime - oldTime > timefactor * 1)
-		oldTime = currTime;
-	else return;
 
 	// start
 	if( length == 0 )
@@ -367,7 +384,7 @@ void reshape( int w, int h )
 void display_time()
 {
 	glColor3f( 1.0, 1.0, 1.0 );
-	glRasterPos2f(5, 65);
+	glRasterPos2f(10, 75);
 	
 	int value = (int)(get_time() / 10 + .5);
     double val = value / 100;
@@ -689,7 +706,6 @@ void idle()
 int main()
 {
 	srand( ( unsigned )time( NULL ) );
-	screen_width = screen_height = 5;
 
 	// instructions
 	cout << endl;
