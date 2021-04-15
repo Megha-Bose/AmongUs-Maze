@@ -12,7 +12,7 @@ of a single-player variant.
 - `./game`
 
 <p align="center">
-  <img src="https://github.com/Megha-Bose/AmongUs-Maze/blob/main/src/ss/ss1.jpg?raw=true" width="350" alt="image 1">
+  <img src="https://github.com/Megha-Bose/AmongUs-Maze/blob/main/src/ss/ss1.png?raw=true" width="350" alt="image 1">
 </p>
 
 ## Details
@@ -41,6 +41,6 @@ This game’s objective is to exit the maze after finishing two tasks.
 - Characters: The player and imposter look like real Among Us characters with basic shapes like a semicircle plus a rectangle stacked for the body and another rectangle for the glass part of the helmet.
 
 <p align="center">
-  <img src="https://github.com/Megha-Bose/AmongUs-Maze/blob/main/src/ss/ss2.jpg?raw=true" width="350" alt="image 2">
+  <img src="https://github.com/Megha-Bose/AmongUs-Maze/blob/main/src/ss/ss2.png?raw=true" width="350" alt="image 2">
 </p>
 
